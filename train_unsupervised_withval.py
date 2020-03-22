@@ -71,7 +71,7 @@ if __name__ == '__main__':
 
     # Instantiate model and send to GPU if available
     model = GroundeR(vocab, vocab_size, embed_dim, h_dim, v_dim, regions, weight_matrix, train_embeddings=False)
-    model.load_state_dict(torch.load('best_model.pth'))
+    # model.load_state_dict(torch.load('best_model.pth'))
     model = model.to(device)
     # print_gpu_memory("  After model to GPU:")
     criterion_att = nn.NLLLoss()
@@ -145,8 +145,8 @@ if __name__ == '__main__':
 
                 # Accuracy
                 region_pred = att.max(dim=1)[1]
-                print(region_pred,'region Pred')
-                print(region_true, 'region True')
+                # print(region_pred,'region Pred')
+                # print(region_true, 'region True')
                 corrects = torch.sum(region_true == region_pred).item()
                 running_corrects += corrects
                 accuracy = corrects / region_true.size(0)
@@ -168,7 +168,8 @@ if __name__ == '__main__':
                     optimizer.step()
                     #print_gpu_memory("  After optimizer step:")
                     dt_backward = (time.time() - t4) * 1000
-                    dataloader.set_description("{:02.0f}.{:03.0f} - Sample {:05.0f}/30781 - Accuracy: {:0.2f}% - Loss: {:02.7f} - GPU: {:0.2f} MB - Load time = {:06.2f}ms - toGPU time = {:06.2f}ms - Forward time = {:06.2f}ms - Loss: {:06.2f}ms - Backward {:06.2f}ms - Time {:05.2f}s".format(epoch, batch_i + 1, (batch_i + 1) * batch_size, accuracy*100, loss.item(), torch.cuda.memory_allocated() / 1024 ** 2, dt_load, dt_togpu, dt_forward, dt_loss, dt_backward, (time.time()-start)))
+                    dataloader.set_description("{:02.0f}.{:03.0f} - Sample {:05.0f}/30781 - Accuracy: {:0.2f}% - Loss: {:02.7f} - GPU: {:0.2f} MB - Load time = {:06.2f}ms - toGPU time = {:06.2f}ms - Forward time = {:06.2f}ms - Loss: {:06.2f}ms - Backward {:06.2f}ms - Time {:05.2f}s"
+                                               .format(epoch, batch_i + 1, (batch_i + 1) * batch_size, accuracy*100, loss.item(), torch.cuda.memory_allocated() / 1024 ** 2, dt_load, dt_togpu, dt_forward, dt_loss, dt_backward, (time.time()-start)))
                     training_losses.append(loss.item())  # Appends loss over entire batch (reduce=mean)
                     
                     training_accuracies.append(accuracy)
