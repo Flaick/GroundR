@@ -10,11 +10,12 @@ You can find three different types of data:
 1. Images (.png): All training images
 2. Sentences (.txt): Each .txt file corresponds to one image. There are multiple sentences in one .txt file which refer to different object, respectively         
 3. Annotations (.xml): One .xml file corresponds to one image, which refer to bounding boxes for different objects
-Store them into different folders
+Store them into different folders under the folder "data"
 
 
 ## Step 1       
-Run the process_dataset.py                          
+Run the process_dataset.py              
+The result will be stored into ./visualfeatures_data , ./annotation_data, ./id2idx_data automatically.
 ## Step 2     
 Run the train_unsupervised_withval.py        
 ## Result
