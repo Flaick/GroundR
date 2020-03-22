@@ -121,6 +121,7 @@ if __name__ == "__main__":
     # BUILD ANNOTATION INPUT DATA STRUCTURE                            #
     ####################################################################
     if generate_annotations or generate_visual:
+        if not os.path.exists('annotation_data'): os.mkdir('annotation_data')
         with open(data_folder + "vocabulary.pkl", "rb") as f:
             word2idx, idx2word = pickle.load(f)
             vocab = set(word2idx.keys())
@@ -177,6 +178,8 @@ if __name__ == "__main__":
                 #############################################################
                 # EXTRACT IMAGE FEATURES  (RESNET101)                       #
                 #############################################################
+                if not os.path.exists('id2idx_data'): os.mkdir('id2idx_data')
+                if not os.path.exists('visualfeatures_data'): os.mkdir('visualfeatures_data')
                 # Build id to idx dictionary
                 id2idx = {id: idx for (idx, id) in enumerate(list(annotationData['boxes'].keys()))}
 
