@@ -24,7 +24,8 @@ Run the train_unsupervised_withval.py
 <img src="https://github.com/Flaick/GroundR/blob/master/learning_profile.png" width="600px" height="500px">             
 <img src="https://github.com/Flaick/GroundR/blob/master/accuracies.png" width="600px" height="500px">         
 
-## Demo        
-In progress
+## TO DO
+1. Selective search for bounding box proposal
+2. Demo with YOLO/Faster-RCNN
 
 
