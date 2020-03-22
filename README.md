@@ -1,5 +1,7 @@
 # GroundR
 Pytorch implementation of the paper \<Grounding of Textual Phrases in Images by Reconstruction\>      
+<img src="https://github.com/Flaick/GroundR/blob/master/src/Fig1.jpg" width="900" height="500">             
+
 # Reference: 
 https://arxiv.org/pdf/1511.03745.pdf         
 https://github.com/acambray/GroundeR-PyTorch
