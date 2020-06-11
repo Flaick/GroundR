@@ -11,7 +11,7 @@ from .lcgn import LCGN
 from .input_unit import Encoder
 from .output_unit import Classifier, BboxRegression
 
-from lcgn.util.boxes import batch_feat_grid2bbox, batch_bbox_iou
+from utils.lcgn_util.boxes import batch_feat_grid2bbox, batch_bbox_iou
 
 
 class SingleHop(nn.Module):

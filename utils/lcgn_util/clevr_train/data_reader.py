@@ -4,10 +4,10 @@ import threading
 import queue
 import numpy as np
 
-from lcgn.util import text_processing
-from lcgn.util.positional_encoding import get_positional_encoding
-from lcgn.util.clevr_feature_loader.feature_loader import SpatialFeatureLoader
-from lcgn.util.boxes import bbox2feat_grid
+from utils.lcgn_util import text_processing
+from utils.lcgn_util.positional_encoding import get_positional_encoding
+from utils.lcgn_util.clevr_feature_loader.feature_loader import SpatialFeatureLoader
+from utils.lcgn_util.boxes import bbox2feat_grid
 
 
 class BatchLoaderClevr:
@@ -23,6 +23,8 @@ class BatchLoaderClevr:
         self.load_answer = ('answer' in self.imdb[0])
         # peek one example to see whether bbox is in the data
         self.load_bbox = ('bbox' in self.imdb[0])
+        print('Loading Answer', self.load_answer)
+        print('Loading Bounding Box', self.load_bbox)
         # the answer dict is always loaded, regardless of self.load_answer
         self.answer_dict = text_processing.VocabDict(
             data_params['vocab_answer_file'])

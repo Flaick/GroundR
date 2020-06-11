@@ -4,7 +4,7 @@ import yaml
 import numpy as np
 import os
 import argparse
-from lcgn.util.attr_dict import AttrDict
+from utils.lcgn_util.attr_dict import AttrDict
 
 __C = AttrDict()
 cfg = __C
@@ -17,13 +17,13 @@ __C.train = True
 __C.EXP_NAME = '<fill-with-filename>'
 __C.GPUS = '0'
 
-__C.SNAPSHOT_FILE = '../exp_clevr/pytorch_ckpt/%s/%04d.ckpt'
+__C.SNAPSHOT_FILE = './pytorch_ckpt/%s/%04d.ckpt'
 
-__C.VOCAB_QUESTION_FILE = '../exp_clevr/data/vocabulary_clevr.txt'
-__C.VOCAB_ANSWER_FILE = '../exp_clevr/data/answers_clevr.txt'
-__C.IMDB_FILE = '../exp_clevr/data/imdb/imdb_%s.npy'
-__C.IMAGE_DIR = '../exp_clevr/clevr_dataset/images'
-__C.SPATIAL_FEATURE_DIR = '../exp_clevr/data/features/spatial'
+__C.VOCAB_QUESTION_FILE = '../../data/clver_locplus/data/vocabulary_clevr.txt'
+__C.VOCAB_ANSWER_FILE = '../../data/clver_locplus/data/answers_clevr.txt'
+__C.IMDB_FILE = '../../data/clver_locplus/data/imdb/imdb_%s.npy'
+__C.IMAGE_DIR = './clevr_locplus_dataset/images'
+__C.SPATIAL_FEATURE_DIR = '../../data/clver_locplus/data/features/spatial'
 
 __C.FEAT_TYPE = 'spatial'  # 'spatial' only, for now
 
@@ -85,7 +85,7 @@ __C.TRAIN = AttrDict()
 __C.TRAIN.SPLIT_VQA = 'train'
 __C.TRAIN.SPLIT_REF = 'locplus_train'
 __C.TRAIN.BATCH_SIZE = 128
-__C.TRAIN.START_EPOCH = 0
+__C.TRAIN.START_EPOCH = 25
 __C.TRAIN.LOSS_TYPE = 'softmax'
 __C.TRAIN.CLIP_GRADIENTS = True
 __C.TRAIN.GRAD_MAX_NORM = 8.
@@ -105,7 +105,7 @@ __C.TEST.SPLIT_REF = 'locplus_val'
 __C.TEST.BATCH_SIZE = 128
 __C.TEST.EPOCH = -1  # Needs to be supplied
 __C.TEST.DUMP_PRED = False
-__C.TEST.RESULT_DIR = '../exp_clevr/results/%s/%04d'
+__C.TEST.RESULT_DIR = '../lcgn/results/%s/%04d'
 
 __C.TEST.NUM_VIS = 0
 __C.TEST.VIS_DIR_PREFIX = 'vis'
@@ -128,7 +128,7 @@ def _postprocess_cfg():  # NoQA
 def build_cfg_from_argparse(args_list=None):
     """Load config with command line options (`--cfg` and a list of options)"""
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cfg', default='../exp_clevr/cfgs_ref/lcgn_ref.yaml')
+    parser.add_argument('--cfg', default='../lcgn/cfgs_ref/lcgn_ref.yaml')
     parser.add_argument('opts', default=None, nargs=argparse.REMAINDER)
     args = parser.parse_args(args_list)
     if args.cfg:

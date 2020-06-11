@@ -41,6 +41,6 @@ def build_imdb(image_set):
 imdb_trn = build_imdb('locplus_train')
 imdb_val = build_imdb('locplus_val')
 
-os.makedirs('./imdb', exist_ok=True)
-np.save('./imdb/imdb_locplus_train.npy', np.array(imdb_trn))
-np.save('./imdb/imdb_locplus_val.npy', np.array(imdb_val))
+os.makedirs('imdb', exist_ok=True)
+np.save('imdb/imdb_locplus_train.npy', np.array(imdb_trn))
+np.save('imdb/imdb_locplus_val.npy', np.array(imdb_val))

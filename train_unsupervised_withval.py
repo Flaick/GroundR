@@ -14,7 +14,7 @@ import pickle
 import numpy as np
 from model import GroundeR
 import matplotlib.pyplot as plt
-from dataloader_unsupervised import UnsupervisedDataLoader
+from data_util.flick30.flick30 import Flick_DataLoader
 from tqdm import tqdm
 
 
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     L = 5
 
     # Build data pipeline providers
-    dataset = UnsupervisedDataLoader(data_dir="./", sample_list_file="train.txt", seq_length=max_seq_length)
+    dataset = Flick_DataLoader(data_dir="./", sample_list_file="train.txt", seq_length=max_seq_length)
     dataset_length = len(dataset)
 
     train_length = int(0.8*dataset_length)
@@ -73,8 +73,8 @@ if __name__ == '__main__':
     model = GroundeR(vocab, vocab_size, embed_dim, h_dim, v_dim, regions, weight_matrix, train_embeddings=False)
     # model.load_state_dict(torch.load('best_model.pth'))
     model = model.to(device)
-    # print_gpu_memory("  After model to GPU:")
-    criterion_att = nn.NLLLoss()
+    # print_gpu_memory("After model to GPU:")
+    criterion_att = nn. NLLLoss()
     criterion_rec = nn.NLLLoss(ignore_index=0)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
@@ -103,7 +103,16 @@ if __name__ == '__main__':
             running_loss = 0.0
             running_corrects = 0.0
             batch_i = 0
-            for vis_features, real_feat, encoder_input, decoder_input, decoder_target, mask, region_true, lengths_enc, lengths_dec in dataloader:
+            for batch in dataloader:
+                vis_features = batch['vis_features']
+                real_feat = batch['real_feat']
+                encoder_input = batch['encoder_input']
+                decoder_input = batch['decoder_input']
+                decoder_target = batch['decoder_target']
+                mask = batch['mask']
+                region_true = batch['region_true']
+                lengths_enc = batch['lengths_enc']
+                lengths_dec = batch['lengths_dec']
                 torch.cuda.empty_cache()
                 dt_load = (time.time() - t0) * 1000
 

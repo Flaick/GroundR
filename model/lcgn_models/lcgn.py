@@ -41,13 +41,13 @@ class LCGN(nn.Module):
         self.read_drop = nn.Dropout(1 - cfg.readDropout)
         self.project_x_loc = ops.Linear(cfg.CTX_DIM, cfg.CTX_DIM)
         self.project_x_ctx = ops.Linear(cfg.CTX_DIM, cfg.CTX_DIM)
-        self.queries = ops.Linear(3*cfg.CTX_DIM, cfg.CTX_DIM)
-        self.keys = ops.Linear(3*cfg.CTX_DIM, cfg.CTX_DIM)
-        self.vals = ops.Linear(3*cfg.CTX_DIM, cfg.CTX_DIM)
+        self.queries = ops.Linear(3 * cfg.CTX_DIM, cfg.CTX_DIM)
+        self.keys = ops.Linear(3 * cfg.CTX_DIM, cfg.CTX_DIM)
+        self.vals = ops.Linear(3 * cfg.CTX_DIM, cfg.CTX_DIM)
         self.proj_keys = ops.Linear(cfg.CMD_DIM, cfg.CTX_DIM)
         self.proj_vals = ops.Linear(cfg.CMD_DIM, cfg.CTX_DIM)
-        self.mem_update = ops.Linear(2*cfg.CTX_DIM, cfg.CTX_DIM)
-        self.combine_kb = ops.Linear(2*cfg.CTX_DIM, cfg.CTX_DIM)
+        self.mem_update = ops.Linear(2 * cfg.CTX_DIM, cfg.CTX_DIM)
+        self.combine_kb = ops.Linear(2 * cfg.CTX_DIM, cfg.CTX_DIM)
 
     def forward(self, images, q_encoding, lstm_outputs, batch_size, q_length,
                 entity_num):

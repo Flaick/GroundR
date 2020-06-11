@@ -9,7 +9,7 @@ from numpy.random import randint
 from torch.utils.data import Dataset
 from utils import *
 
-class UnsupervisedDataLoader(Dataset):
+class Flick_DataLoader(Dataset):
     """ Loads Flickr30k data for the unsupervised, reconstruction case. """
     def __init__(self, data_dir, sample_list_file, seq_length):
         def read_sample_list(sample_list_file):
@@ -93,10 +93,21 @@ class UnsupervisedDataLoader(Dataset):
         # decoder_input = torch.from_numpy(decoder_input)
         # decoder_target = torch.from_numpy(decoder_target)
         # mask = torch.from_numpy(mask)
-        return vis_features, real_feat, encoder_input, decoder_input, decoder_target, mask, true_region, len(phrase), len(phrase)-1
+        batch = {}
+        batch['vis_features'] = vis_features
+        batch['real_feat'] = real_feat
+        batch['encoder_input'] = encoder_input
+        batch['decoder_input'] = decoder_input
+        batch['decoder_target'] = decoder_target
+        batch['mask'] = mask
+        batch['region_true'] = true_region
+        batch['lengths_enc'] = len(phrase)
+        batch['lengths_dec'] = len(phrase)-1
+
+        return batch
 
 from utils import *
-class UnsupervisedDataLoader_test(Dataset):
+class Flick_DataLoader_test(Dataset):
     """ Loads Flickr30k data for the unsupervised, reconstruction case. """
     def __init__(self, data_dir, input_test, seq_length):
         '''
@@ -145,5 +156,5 @@ class UnsupervisedDataLoader_test(Dataset):
         return vis_features, real_feat, encoder_input, decoder_input, decoder_target, mask, len(phrase), len(phrase)-1
 
 if __name__ == '__main__':
-    dataset = UnsupervisedDataLoader(data_dir="/home/yk/Desktop/GroundR/", sample_list_file="train.txt", seq_length=max_seq_length)
+    dataset = Flick_DataLoader(data_dir="/home/yk/Desktop/GroundR/", sample_list_file="train.txt", seq_length=max_seq_length)
 

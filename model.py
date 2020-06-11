@@ -165,6 +165,9 @@ class GroundeR(nn.Module):
         self.vocab_size = len(vocab)
 
     def forward(self, encoder_input, lengths_enc, vis_features, decoder_input, lengths_dec):
+        '''
+        param
+        '''
 
         # Encode
         encoded_batch = self.phrase_encoder(encoder_input, lengths_enc)

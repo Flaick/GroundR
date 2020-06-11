@@ -3,15 +3,14 @@ from __future__ import generator_stop
 import threading
 import queue
 import numpy as np
-import json
 
-from util import text_processing
-from util.positional_encoding import get_positional_encoding
-from util.gqa_feature_loader.feature_loader import (
-    SpatialFeatureLoader, ObjectsFeatureLoader, SceneGraphFeatureLoader)
+from utils.util import text_processing
+from utils.util.positional_encoding import get_positional_encoding
+from utils.util.clevr_feature_loader.feature_loader import SpatialFeatureLoader
+from utils.util.boxes import bbox2feat_grid
 
 
-class BatchLoaderGqa:
+class BatchLoaderClevr:
     def __init__(self, imdb, data_params):
         self.imdb = imdb
         self.data_params = data_params
@@ -22,11 +21,15 @@ class BatchLoaderGqa:
 
         # peek one example to see whether answer is in the data
         self.load_answer = ('answer' in self.imdb[0])
+        # peek one example to see whether bbox is in the data
+        self.load_bbox = ('bbox' in self.imdb[0])
+        print('Loading Answer', self.load_answer)
+        print('Loading Bounding Box', self.load_bbox)
         # the answer dict is always loaded, regardless of self.load_answer
         self.answer_dict = text_processing.VocabDict(
             data_params['vocab_answer_file'])
-        if not self.load_answer:
-            print('imdb has no answer labels. Using dummy labels.\n\n'
+        if not (self.load_answer or self.load_bbox):
+            print('imdb has no answer labels or bbox. Using dummy labels.\n\n'
                   '**The final accuracy will be zero (no labels provided)**\n')
 
         # positional encoding
@@ -36,19 +39,7 @@ class BatchLoaderGqa:
             'positional encoding dim must be a multiply of 4'
         self.pos_enc_scale = data_params.get('pos_enc_scale', 1.)
 
-        self.load_spatial_feature = False
-        self.load_objects_feature = False
-        self.load_scene_graph_feature = False
-        feature_type = data_params['feature_type']
-        if feature_type == 'spatial':
-            self.load_spatial_feature = True
-        elif feature_type == 'objects':
-            self.load_objects_feature = True
-        elif feature_type == 'scene_graph':
-            self.load_scene_graph_feature = True
-        else:
-            raise ValueError('Unknown feature type: %s' % feature_type)
-
+        self.load_spatial_feature = data_params['load_spatial_feature']
         if self.load_spatial_feature:
             spatial_feature_dir = data_params['spatial_feature_dir']
             self.spatial_loader = SpatialFeatureLoader(spatial_feature_dir)
@@ -59,44 +50,26 @@ class BatchLoaderGqa:
             self.pos_enc = self.pos_enc_scale * get_positional_encoding(
                 self.spatial_H, self.spatial_W, self.pos_enc_dim)
 
-        if self.load_objects_feature:
-            objects_feature_dir = data_params['objects_feature_dir']
-            self.objects_loader = ObjectsFeatureLoader(objects_feature_dir)
-            # load one feature map to peek its size
-            self.objects_M = data_params.get('objects_max_num', 100)
-            x, _ = self.objects_loader.load_feature(self.imdb[0]['imageId'])
-            _, self.objects_D = x.shape
-
-        if self.load_scene_graph_feature:
-            scene_graph_file = data_params['scene_graph_file']
-            vocab_name_file = data_params['vocab_name_file']
-            vocab_attr_file = data_params['vocab_attr_file']
-            self.objects_M = data_params.get('objects_max_num', 100)
-            self.scene_graph_loader = SceneGraphFeatureLoader(
-                scene_graph_file, vocab_name_file, vocab_attr_file,
-                max_num=self.objects_M)
-            # load one feature map to peek its size
-            x, _, _ = self.scene_graph_loader.load_feature_normalized_bbox(
-                self.imdb[0]['imageId'])
-            _, self.objects_D = x.shape
+        if self.load_bbox:
+            self.img_H = data_params['img_H']
+            self.img_W = data_params['img_W']
+            self.stride_H = self.img_H * 1. / self.spatial_H
+            self.stride_W = self.img_W * 1. / self.spatial_W
 
     def load_one_batch(self, sample_ids):
         actual_batch_size = len(sample_ids)
         input_seq_batch = np.zeros(
             (actual_batch_size, self.T_encoder), np.int32)
         seq_length_batch = np.zeros(actual_batch_size, np.int32)
+
         if self.load_spatial_feature:
             spatial_feat_batch = np.zeros(
                 (actual_batch_size, self.spatial_D, self.spatial_H,
                  self.spatial_W), np.float32)
-        if self.load_objects_feature or self.load_scene_graph_feature:
-            objects_feat_batch = np.zeros(
-                (actual_batch_size, self.objects_M, self.objects_D),
-                np.float32)
-            objects_bbox_batch = np.zeros(
-                (actual_batch_size, self.objects_M, 4), np.float32)
-            objects_valid_batch = np.zeros(
-                (actual_batch_size, self.objects_M), np.bool)
+        if self.load_bbox:
+            bbox_batch = np.zeros((actual_batch_size, 4), np.float32)
+            bbox_ind_batch = np.zeros(actual_batch_size, np.int32)
+            bbox_offset_batch = np.zeros((actual_batch_size, 4), np.float32)
 
         qid_list = [None]*actual_batch_size
         qstr_list = [None]*actual_batch_size
@@ -108,7 +81,7 @@ class BatchLoaderGqa:
         for n in range(len(sample_ids)):
             iminfo = self.imdb[sample_ids[n]]
             question_str = iminfo['question']
-            question_tokens = text_processing.tokenize_gqa(question_str)
+            question_tokens = text_processing.tokenize_clevr(question_str)
             if len(question_tokens) > self.T_encoder:
                 print('data reader: truncating question:\n\t' + question_str)
                 question_tokens = question_tokens[:self.T_encoder]
@@ -120,26 +93,17 @@ class BatchLoaderGqa:
             if self.load_spatial_feature:
                 feature = self.spatial_loader.load_feature(iminfo['imageId'])
                 spatial_feat_batch[n:n+1] = feature
-            if self.load_objects_feature:
-                feature, normalized_bbox, valid = \
-                    self.objects_loader.load_feature_normalized_bbox(
-                        iminfo['imageId'])
-                objects_feat_batch[n:n+1] = feature
-                objects_bbox_batch[n:n+1] = normalized_bbox
-                objects_valid_batch[n:n+1] = valid
-            if self.load_scene_graph_feature:
-                feature, normalized_bbox, valid = \
-                    self.scene_graph_loader.load_feature_normalized_bbox(
-                        iminfo['imageId'])
-                objects_feat_batch[n:n+1] = feature
-                objects_bbox_batch[n:n+1] = normalized_bbox
-                objects_valid_batch[n:n+1] = valid
             qid_list[n] = iminfo['questionId']
             qstr_list[n] = question_str
             imageid_list[n] = iminfo['imageId']
             if self.load_answer:
                 answer_idx = self.answer_dict.word2idx(iminfo['answer'])
                 answer_label_batch[n] = answer_idx
+            if self.load_bbox:
+                bbox_batch[n] = iminfo['bbox']
+                bbox_ind_batch[n], bbox_offset_batch[n] = bbox2feat_grid(
+                    iminfo['bbox'], self.stride_H, self.stride_W,
+                    self.spatial_H, self.spatial_W)
         batch = dict(input_seq_batch=input_seq_batch,
                      seq_length_batch=seq_length_batch,
                      answer_label_batch=answer_label_batch,
@@ -160,22 +124,12 @@ class BatchLoaderGqa:
             N, H, W, C = image_feat_batch.shape
             image_feat_batch = image_feat_batch.reshape((N, H*W, C))
             image_valid_batch = np.ones(image_feat_batch.shape[:-1], np.bool)
-        if self.load_objects_feature or self.load_scene_graph_feature:
-            batch['objects_feat_batch'] = objects_feat_batch
-            batch['objects_bbox_batch'] = objects_bbox_batch
-            batch['objects_valid_batch'] = objects_valid_batch
-            if self.add_pos_enc:
-                # add bounding boxes to the object features
-                # tile bbox to roughly match the norm of RCNN features
-                objects_bbox_tile = self.pos_enc_scale * np.tile(
-                    objects_bbox_batch, (1, 1, self.pos_enc_dim//4))
-                image_feat_batch = np.concatenate(
-                    (objects_feat_batch, objects_bbox_tile), axis=-1)
-            else:
-                image_feat_batch = objects_feat_batch
-            image_valid_batch = objects_valid_batch
         batch['image_feat_batch'] = image_feat_batch
         batch['image_valid_batch'] = image_valid_batch
+        if self.load_bbox:
+            batch['bbox_batch'] = bbox_batch
+            batch['bbox_ind_batch'] = bbox_ind_batch
+            batch['bbox_offset_batch'] = bbox_offset_batch
         return batch
 
 
@@ -183,12 +137,7 @@ class DataReader:
     def __init__(self, data_file, shuffle, max_num=0, prefetch_num=16,
                  **kwargs):
         print('Loading imdb from %s' % data_file)
-        with open(data_file) as f:
-            raw_data = json.load(f)
-            qIds = sorted(raw_data)
-            for qId, q in raw_data.items():
-                q['questionId'] = qId
-            imdb = [raw_data[qId] for qId in qIds]
+        imdb = np.load(data_file, allow_pickle=True)
         print('Done')
         self.imdb = imdb
         self.shuffle = shuffle
@@ -199,7 +148,7 @@ class DataReader:
             self.imdb = self.imdb[:max_num]
 
         # Vqa data loader
-        self.batch_loader = BatchLoaderGqa(self.imdb, self.data_params)
+        self.batch_loader = BatchLoaderClevr(self.imdb, self.data_params)
 
         # Start prefetching thread
         self.prefetch_queue = queue.Queue(maxsize=self.prefetch_num)

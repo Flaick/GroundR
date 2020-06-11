@@ -3,9 +3,9 @@ import numpy as np
 import json
 import torch
 
-from lcgn.models_clevr.model import LCGNwrapper
-from lcgn.models_clevr.config import build_cfg_from_argparse
-from lcgn.util.clevr_train.data_reader import DataReader
+from model.lcgn_models.model import LCGNwrapper
+from model.lcgn_models.config import build_cfg_from_argparse
+from utils.lcgn_util.clevr_train.data_reader import DataReader
 
 # Load config
 cfg = build_cfg_from_argparse()
