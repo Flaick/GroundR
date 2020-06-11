@@ -1,0 +1,5 @@
+[/EN#9237/people The players of the baseball team] are standing on [/EN#9238/scene the field] , with [/EN#9239/people many people] watching from [/EN#9241/scene the stands] .
+[/EN#9237/people Baseball players] are playing on [/EN#9238/scene a field] in [/EN#9241/scene a stadium] filled with [/EN#9239/people people] .
+[/EN#9237/people A team] plays [/EN#9240/other baseball] at [/EN#9241/scene a large crowded stadium] .
+[/EN#9239/people A crowd] cheers on [/EN#9237/people a baseball team] .
+[/EN#9240/other game] is playing in [/EN#9241/scene the stadium]

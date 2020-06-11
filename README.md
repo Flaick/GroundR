@@ -1,5 +1,7 @@
 # GroundR
 Pytorch implementation of the paper \<Grounding of Textual Phrases in Images by Reconstruction\>      
+<img src="https://github.com/Flaick/GroundR/blob/master/src/Fig1.jpg" width="900" height="500">             
+
 # Reference: 
 https://arxiv.org/pdf/1511.03745.pdf         
 https://github.com/acambray/GroundeR-PyTorch
@@ -22,7 +24,8 @@ Run the train_unsupervised_withval.py
 <img src="https://github.com/Flaick/GroundR/blob/master/learning_profile.png" width="600px" height="500px">             
 <img src="https://github.com/Flaick/GroundR/blob/master/accuracies.png" width="600px" height="500px">         
 
-## Demo        
-In progress
+## TO DO
+1. Selective search for bounding box proposal
+2. Demo with YOLO/Faster-RCNN
 
 
