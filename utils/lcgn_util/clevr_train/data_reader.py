@@ -125,6 +125,7 @@ class BatchLoaderClevr:
             image_feat_batch = image_feat_batch.reshape((N, H*W, C))
             image_valid_batch = np.ones(image_feat_batch.shape[:-1], np.bool)
         batch['image_feat_batch'] = image_feat_batch
+        print('image_fea_batch', batch['image_feat_batch'].shape)
         batch['image_valid_batch'] = image_valid_batch
         if self.load_bbox:
             batch['bbox_batch'] = bbox_batch

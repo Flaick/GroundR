@@ -14,9 +14,9 @@ import torchvision
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--input_image_dir', default='../clevr_locplus_dataset/images/val')
+parser.add_argument('--input_image_dir', default='./processed/images/train')
 parser.add_argument('--max_images', default=None, type=int)
-parser.add_argument('--output_h5_file', default='./features/spatial/val.h5')
+parser.add_argument('--output_h5_file', default='./features/spatial/train.h5')
 
 parser.add_argument('--image_height', default=224, type=int)
 parser.add_argument('--image_width', default=224, type=int)
@@ -67,7 +67,7 @@ def main(args):
   input_paths = []
   idx_set = set()
   for fn in os.listdir(args.input_image_dir):
-    if not fn.endswith('.png'): continue
+    if not fn.endswith('.jpg'): continue
     idx = int(os.path.splitext(fn)[0].split('_')[-1])
     input_paths.append((os.path.join(args.input_image_dir, fn), idx))
     idx_set.add(idx)
@@ -108,6 +108,22 @@ def main(args):
       i1 = i0 + len(cur_batch)
       feat_dset[i0:i1] = feats
       print('Processed %d / %d images' % (i1, len(input_paths)))
+
+
+def rename(path):
+  file_1 = [file for file in os.listdir(path) if file[-4:] == '.jpg']
+  file_2 = sorted(file_1)
+  for i, file in enumerate(file_2):
+    old_tag = file.split('_')[-1].split('.png')[0]
+    num_tag = '%06d' % (i) + '.jpg'
+    newname = file.replace(old_tag, num_tag)
+
+    print(file, newname)
+    # exit()
+    os.rename(os.path.join(path, file), os.path.join(path, newname))
+
+
+
 
 
 if __name__ == '__main__':

@@ -9,7 +9,7 @@ Output data structures (for each image in dataset)
  - Link id2idx dict         id2idx/<FILE_ID>.pkl                    - Matches object id for each phrase to the idx of the correct region (bbox)
 """
 
-from utils import *
+from utils.utils import *
 import PIL
 from PIL import Image, ImageDraw
 import time
@@ -132,7 +132,7 @@ if __name__ == "__main__":
         N = len(ids)
         for img_n, img_id in enumerate(ids):
             img_id = img_id.replace('\n', '')
-            img_path = data_folder + 'data/flickr30k-images' + img_id + '. jpg'
+            img_path = data_folder + 'data/flickr30k_images' + img_id + '. jpg'
 
             # Get Sentence and Annotation info for this image
             corefData = get_sentence_data(data_folder + 'data/Sentences/'+img_id+'.txt')
@@ -187,7 +187,7 @@ if __name__ == "__main__":
                 objects = list(annotationData['boxes'].keys())
                 vis_matrix = np.zeros((len(objects), 1000), dtype=float)
                 for id in objects:
-                    img = Image.open(data_folder + 'data/flickr30k-images/' + img_id + '.jpg')
+                    img = Image.open(data_folder + 'data/flickr30k_images/' + img_id + '.jpg')
                     # For each Object: extract boxes and unify them
                     boxes = annotationData['boxes'][id]
                     box = unify_boxes(boxes) if len(boxes) > 1 else boxes[0]

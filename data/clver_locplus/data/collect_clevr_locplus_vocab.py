@@ -1,6 +1,6 @@
 import json
 import sys; sys.path.append('../../lcgn_util/')  # NoQA
-from text_processing import tokenize_clevr
+from utils.lcgn_util.text_processing import tokenize_clevr
 from collections import defaultdict
 
 

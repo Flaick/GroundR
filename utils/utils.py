@@ -164,7 +164,7 @@ if __name__=='__main__':
     # objects = list(annotationData['boxes'].keys())
     # vis_matrix = np.zeros((len(objects), 1000), dtype=float)
     # for id in objects:
-    #     img = Image.open(data_folder + 'data/flickr30k-images/' + img_id + '.jpg')
+    #     img = Image.open(data_folder + 'data/flickr30k_images/' + img_id + '.jpg')
     #     # For each Object: extract boxes and unify them
     #     boxes = annotationData['boxes'][id]
     #     box = unify_boxes(boxes) if len(boxes) > 1 else boxes[0]

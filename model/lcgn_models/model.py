@@ -75,8 +75,11 @@ class LCGNnet(nn.Module):
             batch['seq_length_batch'].astype(np.int64)).cuda()
         images = torch.from_numpy(
             batch['image_feat_batch'].astype(np.float32)).cuda()
+        print('fuck', images.shape)
         imagesObjectNum = torch.from_numpy(
             np.sum(batch['image_valid_batch'].astype(np.int64), axis=1)).cuda()
+        # print('images feature', images.shape)
+        # print('imagesObjectNum', imagesObjectNum)
         if run_vqa:
             answerIndices = torch.from_numpy(
                 batch['answer_label_batch'].astype(np.int64)).cuda()

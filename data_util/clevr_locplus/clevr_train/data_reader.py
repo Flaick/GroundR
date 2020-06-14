@@ -4,10 +4,10 @@ import threading
 import queue
 import numpy as np
 
-from utils.util import text_processing
-from utils.util.positional_encoding import get_positional_encoding
-from utils.util.clevr_feature_loader.feature_loader import SpatialFeatureLoader
-from utils.util.boxes import bbox2feat_grid
+from utils.lcgn_util import text_processing
+from utils.lcgn_util.positional_encoding import get_positional_encoding
+from utils.lcgn_util.clevr_feature_loader.feature_loader import SpatialFeatureLoader
+from utils.lcgn_util.boxes import bbox2feat_grid
 
 
 class BatchLoaderClevr:
