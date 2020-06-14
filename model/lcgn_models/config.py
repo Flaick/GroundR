@@ -128,7 +128,7 @@ def _postprocess_cfg():  # NoQA
 def build_cfg_from_argparse(args_list=None):
     """Load config with command line options (`--cfg` and a list of options)"""
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cfg', default='../lcgn/cfgs_flick/flickr.yaml')
+    parser.add_argument('--cfg', default='../../experiment/lcgn/cfgs_ref/lcgn_ref.yaml')
     parser.add_argument('opts', default=None, nargs=argparse.REMAINDER)
     args = parser.parse_args(args_list)
     if args.cfg:

@@ -25,7 +25,7 @@ tokenize_clevr = tokenize_gqa
 
 
 def load_str_list(fname):
-    with open(fname) as f:
+    with open(fname, encoding='utf-8') as f:
         lines = f.readlines()
     lines = [l.strip() for l in lines]
     return lines

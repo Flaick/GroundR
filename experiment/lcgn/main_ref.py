@@ -17,6 +17,9 @@ if len(cfg.GPUS.split(',')) > 1:
 
 
 def load_train_data(max_num=0):
+    print(cfg.IMDB_FILE)
+    print(cfg.TRAIN.SPLIT_REF)
+    print('fuck')
     imdb_file = cfg.IMDB_FILE % cfg.TRAIN.SPLIT_REF
     data_reader = DataReader(
         imdb_file, shuffle=True, max_num=max_num,
